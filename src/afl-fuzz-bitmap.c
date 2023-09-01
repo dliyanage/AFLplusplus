@@ -483,9 +483,13 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     cksum = hash64(afl->fsrv.trace_bits, afl->fsrv.map_size, HASH_CONST);
 
     /* Saturated increment */
-    if (likely(afl->n_fuzz[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF))
-      afl->n_fuzz[cksum % N_FUZZ_SIZE]++;
+    if (afl->n_fuzz[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF) {
 
+      u32 entry = cksum % N_FUZZ_SIZE;
+      afl->n_fuzz[entry]++;
+      afl->n_fuzz_stats[entry]++;
+
+    }
   }
 
   if (likely(fault == afl->crash_mode)) {
@@ -526,12 +530,19 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     queue_fn =
         alloc_printf("%s/queue/id_%06u", afl->out_dir, afl->queued_items);
 
-#endif                                                    /* ^!SIMPLE_FILES */
+#endif                                                    
+    /* ^!SIMPLE_FILES */
     fd = open(queue_fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
     if (unlikely(fd < 0)) { PFATAL("Unable to create '%s'", queue_fn); }
     ck_write(fd, mem, len, queue_fn);
     close(fd);
     add_to_queue(afl, queue_fn, len, 0);
+
+    if (afl->queued_paths % 10 == 0) {
+
+      memset(afl->n_fuzz_stats, 0, N_FUZZ_SIZE * sizeof(u32));
+
+    }
 
     if (unlikely(afl->fuzz_mode) &&
         likely(afl->switch_fuzz_mode && !afl->non_instrumented_mode)) {
@@ -596,6 +607,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
       afl->queue_top->n_fuzz_entry = cksum % N_FUZZ_SIZE;
       afl->n_fuzz[afl->queue_top->n_fuzz_entry] = 1;
+      afl->n_fuzz_stats[afl->queue_top->n_fuzz_entry] = 1;
 
     }
 

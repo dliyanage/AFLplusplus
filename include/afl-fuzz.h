@@ -552,7 +552,7 @@ typedef struct afl_state {
   u8 *var_bytes;                        /* Bytes that appear to be variable */
 
 #define N_FUZZ_SIZE (1 << 21)
-  u32 *n_fuzz;
+  u32 *n_fuzz, *n_fuzz_stats;       /* Number of fuzz cases per queue entry */
 
   volatile u8 stop_soon,                /* Ctrl-C pressed?                  */
       clear_screen;                     /* Window resized?                  */

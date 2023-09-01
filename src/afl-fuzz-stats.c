@@ -251,6 +251,7 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
 
   u64   cur_time = get_cur_time();
   u8    fn[PATH_MAX];
+  u64   gt = 0;
   FILE *f;
 
   snprintf(fn, PATH_MAX, "%s/fuzzer_stats", afl->out_dir);
@@ -283,6 +284,28 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
 
   }
 
+  if (afl->schedule >= FAST && afl->schedule <= RARE) {
+
+    u64 singletons = 0;
+    for (u32 i = 0; i < N_FUZZ_SIZE; ++i) {
+
+      if (afl->n_fuzz_stats[i] == 1) { ++singletons; }
+
+    }
+
+    // Compute the Good-Turing estimates
+    if (afl->fsrv.total_execs > 0) {
+
+        u64 gt = (singletons /afl->fsrv.total_execs);
+
+    } else{
+
+        u64 gt = 0;
+
+    }
+
+  }
+
 #ifndef __HAIKU__
   if (getrusage(RUSAGE_CHILDREN, &rus)) { rus.ru_maxrss = 0; }
 #endif
@@ -297,6 +320,7 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
       "cycles_wo_finds   : %llu\n"
       "time_wo_finds     : %llu\n"
       "execs_done        : %llu\n"
+      "good-turing       : %llu\n"
       "execs_per_sec     : %0.02f\n"
       "execs_ps_last_min : %0.02f\n"
       "corpus_count      : %u\n"
@@ -341,7 +365,7 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
           : ((afl->start_time == 0 || afl->last_find_time == 0)
                  ? 0
                  : (cur_time - afl->last_find_time) / 1000),
-      afl->fsrv.total_execs,
+      afl->fsrv.total_execs, gt,
       afl->fsrv.total_execs /
           ((double)(afl->prev_run_time + get_cur_time() - afl->start_time) /
            1000),
@@ -885,10 +909,10 @@ void show_stats_normal(afl_state_t *afl) {
 
   }
 
-  u_stringify_time_diff(time_tmp, afl->prev_run_time + cur_ms, afl->start_time);
-  SAYF(bV bSTOP "        run time : " cRST "%-33s " bSTG bV bSTOP
-                "  cycles done : %s%-5s " bSTG              bV "\n",
-       time_tmp, tmp, u_stringify_int(IB(0), afl->queue_cycle - 1));
+  u_stringify_time_diff(time_tmp, cur_ms, afl->last_hang_time);
+      SAYF(bV bSTOP "  last uniq hang : " cRST "%-33s " bSTG bV bSTOP
+                    "   uniq hangs : " cRST "%-6s" bSTG         bV "\n",
+           time_tmp, tmp);
 
   /* We want to warn people about not seeing new paths after a full cycle,
      except when resuming fuzzing or running in non-instrumented mode. */
