@@ -251,7 +251,6 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
 
   u64   cur_time = get_cur_time();
   u8    fn[PATH_MAX];
-  u64   gt = 0;
   FILE *f;
 
   snprintf(fn, PATH_MAX, "%s/fuzzer_stats", afl->out_dir);
@@ -285,22 +284,16 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
   }
 
   if (afl->schedule >= FAST && afl->schedule <= RARE) {
-
-    u64 singletons = 0;
-    for (u32 i = 0; i < N_FUZZ_SIZE; ++i) {
-
-      if (afl->n_fuzz_stats[i] == 1) { ++singletons; }
-
-    }
-
     // Compute the Good-Turing estimates
     if (afl->fsrv.total_execs > 0) {
 
-        u64 gt = (singletons /afl->fsrv.total_execs);
+        gt = (singletons /afl->fsrv.total_execs);
+        gt_reset = (singletons_reset / afl->fsrv.total_execs);
 
     } else{
 
-        u64 gt = 0;
+        gt = 0;
+        gt_reset = 0;
 
     }
 
@@ -320,7 +313,8 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
       "cycles_wo_finds   : %llu\n"
       "time_wo_finds     : %llu\n"
       "execs_done        : %llu\n"
-      "good-turing       : %llu\n"
+      "good_turing       : %0.02f\n"
+      "good_turing_reset : %0.02f\n"
       "execs_per_sec     : %0.02f\n"
       "execs_ps_last_min : %0.02f\n"
       "corpus_count      : %u\n"
@@ -365,7 +359,7 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
           : ((afl->start_time == 0 || afl->last_find_time == 0)
                  ? 0
                  : (cur_time - afl->last_find_time) / 1000),
-      afl->fsrv.total_execs, gt,
+      afl->fsrv.total_execs, gt, gt_reset,
       afl->fsrv.total_execs /
           ((double)(afl->prev_run_time + get_cur_time() - afl->start_time) /
            1000),
@@ -509,16 +503,16 @@ void maybe_update_plot_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
 
      relative_time, afl->cycles_done, cur_item, corpus_count, corpus_not_fuzzed,
      favored_not_fuzzed, saved_crashes, saved_hangs, max_depth,
-     execs_per_sec, edges_found */
+     execs_per_sec, edges_found, good-turing estimates */
 
   fprintf(afl->fsrv.plot_file,
           "%llu, %llu, %u, %u, %u, %u, %0.02f%%, %llu, %llu, %u, %0.02f, %llu, "
-          "%u\n",
+          "%u, %0.02f%%, %0.02f%%\n",
           ((afl->prev_run_time + get_cur_time() - afl->start_time) / 1000),
           afl->queue_cycle - 1, afl->current_entry, afl->queued_items,
           afl->pending_not_fuzzed, afl->pending_favored, bitmap_cvg,
           afl->saved_crashes, afl->saved_hangs, afl->max_depth, eps,
-          afl->plot_prev_ed, t_bytes);                     /* ignore errors */
+          afl->plot_prev_ed, t_bytes,gt,gt_reset);                     /* ignore errors */
 
   fflush(afl->fsrv.plot_file);
 

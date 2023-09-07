@@ -140,6 +140,13 @@ extern s16 interesting_16[INTERESTING_8_LEN + INTERESTING_16_LEN];
 extern s32
     interesting_32[INTERESTING_8_LEN + INTERESTING_16_LEN + INTERESTING_32_LEN];
 
+/* Estimation variables */
+extern int32_t singletons;                  /* Number of singletons */
+extern double gt;                           /* Good-Turing estimator */
+extern int32_t reset_param = 10;            /* The number of seeds to add before resetting the hit counts */
+extern int32_t singletons_reset;            /* Number of reset singletons */
+extern double gt_reset;                     /* Good-Turing estimator after reset */
+
 struct tainted {
 
   u32             pos;
@@ -552,7 +559,7 @@ typedef struct afl_state {
   u8 *var_bytes;                        /* Bytes that appear to be variable */
 
 #define N_FUZZ_SIZE (1 << 21)
-  u32 *n_fuzz, *n_fuzz_stats;       /* Number of fuzz cases per queue entry */
+  u32 *n_fuzz, *n_fuzz_reset;       /* Number of fuzz cases per queue entry */
 
   volatile u8 stop_soon,                /* Ctrl-C pressed?                  */
       clear_screen;                     /* Window resized?                  */
