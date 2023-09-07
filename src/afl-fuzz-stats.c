@@ -313,8 +313,8 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
       "cycles_wo_finds   : %llu\n"
       "time_wo_finds     : %llu\n"
       "execs_done        : %llu\n"
-      "good_turing       : %0.02f\n"
-      "good_turing_reset : %0.02f\n"
+      "good_turing       : %llu\n"
+      "good_turing_reset : %llu\n"
       "execs_per_sec     : %0.02f\n"
       "execs_ps_last_min : %0.02f\n"
       "corpus_count      : %u\n"
@@ -507,7 +507,7 @@ void maybe_update_plot_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
 
   fprintf(afl->fsrv.plot_file,
           "%llu, %llu, %u, %u, %u, %u, %0.02f%%, %llu, %llu, %u, %0.02f, %llu, "
-          "%u, %0.02f%%, %0.02f%%\n",
+          "%u, %llu, %llu\n",
           ((afl->prev_run_time + get_cur_time() - afl->start_time) / 1000),
           afl->queue_cycle - 1, afl->current_entry, afl->queued_items,
           afl->pending_not_fuzzed, afl->pending_favored, bitmap_cvg,
