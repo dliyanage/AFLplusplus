@@ -140,13 +140,6 @@ extern s16 interesting_16[INTERESTING_8_LEN + INTERESTING_16_LEN];
 extern s32
     interesting_32[INTERESTING_8_LEN + INTERESTING_16_LEN + INTERESTING_32_LEN];
 
-/* Estimation variables */
-extern int32_t singletons;                  /* Number of singletons */
-extern double gt;                           /* Good-Turing estimator */
-extern int32_t reset_param = 10;            /* The number of seeds to add before resetting the hit counts */
-extern int32_t singletons_reset;            /* Number of reset singletons */
-extern double gt_reset;                     /* Good-Turing estimator after reset */
-
 struct tainted {
 
   u32             pos;
@@ -547,6 +540,13 @@ typedef struct afl_state {
       cycle_schedules,                  /* cycle power schedules?           */
       old_seed_selection,               /* use vanilla afl seed selection   */
       reinit_table;                     /* reinit the queue weight table    */
+
+  u8  singletons,                        /* Number of singletons */
+      reset_param,                      /* The number of seeds to add before resetting the hit counts */
+      singletons_reset;                 /* Number of reset singletons */
+  
+  u32 gt,                           /* Good-Turing estimator */
+      gt_reset;                     /* Good-Turing estimator after reset */
 
   u8 *virgin_bits,                      /* Regions yet untouched by fuzzing */
       *virgin_tmout,                    /* Bits we haven't seen in tmouts   */

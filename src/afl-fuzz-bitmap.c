@@ -484,12 +484,12 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
     // Update the nunber of singletons and reset-singletons
     if (afl->n_fuzz[cksum % N_FUZZ_SIZE] == 0 ){
-      singletons--;
-      singletons_reset--;
+      afl->singletons--;
+      afl->singletons_reset--;
     }
     if (afl->n_fuzz[cksum % N_FUZZ_SIZE] == 1 ){
-      singletons++;
-      singletons_reset++;
+      afl->singletons++;
+      afl->singletons_reset++;
     }
 
     /* Saturated increment */
@@ -549,10 +549,10 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     close(fd);
     add_to_queue(afl, queue_fn, len, 0);
 
-    if (afl->queued_favored % reset_param == 0) {
+    if (afl->queued_favored % afl->reset_param == 0) {
 
       memset(afl->n_fuzz_reset, 0, N_FUZZ_SIZE * sizeof(u32));
-      singletons_reset = 0;
+      afl->singletons_reset = 0;
 
     }
 

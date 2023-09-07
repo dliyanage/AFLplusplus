@@ -287,13 +287,13 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
     // Compute the Good-Turing estimates
     if (afl->fsrv.total_execs > 0) {
 
-        gt = (singletons /afl->fsrv.total_execs);
-        gt_reset = (singletons_reset / afl->fsrv.total_execs);
+        afl->gt = (afl->singletons /afl->fsrv.total_execs);
+        afl->gt_reset = (afl->singletons_reset / afl->fsrv.total_execs);
 
     } else{
 
-        gt = 0;
-        gt_reset = 0;
+        afl->gt = 0;
+        afl->gt_reset = 0;
 
     }
 
@@ -359,7 +359,7 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
           : ((afl->start_time == 0 || afl->last_find_time == 0)
                  ? 0
                  : (cur_time - afl->last_find_time) / 1000),
-      afl->fsrv.total_execs, gt, gt_reset,
+      afl->fsrv.total_execs, afl->gt, afl->gt_reset,
       afl->fsrv.total_execs /
           ((double)(afl->prev_run_time + get_cur_time() - afl->start_time) /
            1000),
@@ -512,7 +512,7 @@ void maybe_update_plot_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
           afl->queue_cycle - 1, afl->current_entry, afl->queued_items,
           afl->pending_not_fuzzed, afl->pending_favored, bitmap_cvg,
           afl->saved_crashes, afl->saved_hangs, afl->max_depth, eps,
-          afl->plot_prev_ed, t_bytes,gt,gt_reset);                     /* ignore errors */
+          afl->plot_prev_ed, t_bytes,afl->gt,afl->gt_reset);                     /* ignore errors */
 
   fflush(afl->fsrv.plot_file);
 
