@@ -483,7 +483,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     cksum = hash64(afl->fsrv.trace_bits, afl->fsrv.map_size, HASH_CONST);
 
     // Update the nunber of singletons and reset-singletons
-    if (afl->n_fuzz[cksum % N_FUZZ_SIZE] == 0 ){
+    /*if (afl->n_fuzz[cksum % N_FUZZ_SIZE] == 0 ){
       afl->singletons--;
       afl->singletons_reset--;
     }
@@ -493,13 +493,21 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     }
 
     /* Saturated increment */
-    if (likely(afl->n_fuzz[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
+    /*if (likely(afl->n_fuzz[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
       afl->n_fuzz[cksum % N_FUZZ_SIZE]++;
     }
 
     if (likely(afl->n_fuzz_reset[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
       afl->n_fuzz_reset[cksum % N_FUZZ_SIZE]++;
-    }
+    }*/
+
+    afl->singletons = 0;
+      for (u32 i = 0; i < afl->queued_items; i++) {
+
+        struct queue_entry *q = afl->queue_buf[i];
+        if (afl->n_fuzz[q->n_fuzz_entry] == 1) { ++afl->singletons; }
+
+      }
 
   }
 

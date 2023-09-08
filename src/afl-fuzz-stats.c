@@ -503,7 +503,7 @@ void maybe_update_plot_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
 
      relative_time, afl->cycles_done, cur_item, corpus_count, corpus_not_fuzzed,
      favored_not_fuzzed, saved_crashes, saved_hangs, max_depth,
-     execs_per_sec, edges_found, good-turing estimates */
+     execs_per_sec, edges_found, good-turing, good-turing_reset */
 
   fprintf(afl->fsrv.plot_file,
           "%llu, %llu, %u, %u, %u, %u, %0.02f%%, %llu, %llu, %u, %0.02f, %llu, "
