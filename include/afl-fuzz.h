@@ -541,12 +541,12 @@ typedef struct afl_state {
       old_seed_selection,               /* use vanilla afl seed selection   */
       reinit_table;                     /* reinit the queue weight table    */
 
-  u8  singletons,                        /* Number of singletons */
+  u64 singletons,                        /* Number of singletons */
       reset_param,                      /* The number of seeds to add before resetting the hit counts */
       singletons_reset;                 /* Number of reset singletons */
   
-  u32 gt,                           /* Good-Turing estimator */
-      gt_reset;                     /* Good-Turing estimator after reset */
+  long double gt,                           /* Good-Turing estimator */
+              gt_reset;                     /* Good-Turing estimator after reset */
 
   u8 *virgin_bits,                      /* Regions yet untouched by fuzzing */
       *virgin_tmout,                    /* Bits we haven't seen in tmouts   */

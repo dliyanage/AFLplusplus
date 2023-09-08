@@ -505,7 +505,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
       for (u32 i = 0; i < afl->queued_items; i++) {
 
         struct queue_entry *q = afl->queue_buf[i];
-        if (afl->n_fuzz[q->n_fuzz_entry] == 1) { ++afl->singletons; }
+        if (afl->n_fuzz[q->n_fuzz_entry] == 1) { afl->singletons++; }
 
       }
 
