@@ -455,6 +455,8 @@ void write_crash_readme(afl_state_t *afl) {
 u8 __attribute__((hot))
 save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
+  afl->reset_param = 1;
+
   if (unlikely(len == 0)) { return 0; }
 
   if (unlikely(fault == FSRV_RUN_TMOUT && afl->afl_env.afl_ignore_timeouts)) {
@@ -505,7 +507,15 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
       for (u32 i = 0; i < afl->queued_items; i++) {
 
         struct queue_entry *q = afl->queue_buf[i];
-        if (afl->n_fuzz[q->n_fuzz_entry] == 1) { afl->singletons++; }
+        if (afl->n_fuzz[q->n_fuzz_entry] == 1) { ++afl->singletons; }
+
+      }
+
+    afl->singletons_reset = 0;
+      for (u32 i = 0; i < afl->queued_items; i++) {
+
+        struct queue_entry *q = afl->queue_buf[i];
+        if (afl->n_fuzz_reset[q->n_fuzz_entry] == 1) { ++afl->singletons_reset; }
 
       }
 
@@ -556,12 +566,11 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     ck_write(fd, mem, len, queue_fn);
     close(fd);
     add_to_queue(afl, queue_fn, len, 0);
-    afl->reset_param = 10;
 
     if (afl->queued_favored % afl->reset_param == 0) {
 
       memset(afl->n_fuzz_reset, 0, N_FUZZ_SIZE * sizeof(u32));
-      afl->singletons_reset = 0;
+      /*afl->singletons_reset = 0;*/
 
     }
 
