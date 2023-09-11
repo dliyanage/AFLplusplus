@@ -1591,6 +1591,8 @@ int main(int argc, char **argv_orig, char **envp) {
 
     afl->n_fuzz = ck_alloc(N_FUZZ_SIZE * sizeof(u32));
     afl->n_fuzz_reset = ck_alloc(N_FUZZ_SIZE * sizeof(u32));
+    afl->singletons = 0;
+    afl->singletons_reset = 0;
 
   }
 

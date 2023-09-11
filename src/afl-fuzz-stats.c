@@ -287,8 +287,8 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
     // Compute the Good-Turing estimates
     if (afl->fsrv.total_execs > 0) {
 
-        afl->gt = (afl->singletons /afl->fsrv.total_execs);
-        afl->gt_reset = (afl->singletons_reset / afl->fsrv.total_execs);
+        afl->gt = ((double) afl->singletons) / afl->fsrv.total_execs;
+        afl->gt_reset = ((double) afl->singletons_reset) / afl->fsrv.total_execs;  
 
     } else{
 

@@ -542,11 +542,10 @@ typedef struct afl_state {
       reinit_table;                     /* reinit the queue weight table    */
 
   u64 singletons,                        /* Number of singletons */
-      reset_param,                      /* The number of seeds to add before resetting the hit counts */
       singletons_reset;                 /* Number of reset singletons */
   
-  long double gt,                           /* Good-Turing estimator */
-              gt_reset;                     /* Good-Turing estimator after reset */
+  long double gt,                       /* Good-Turing estimator */
+              gt_reset;                 /* Good-Turing estimator after reset */
 
   u8 *virgin_bits,                      /* Regions yet untouched by fuzzing */
       *virgin_tmout,                    /* Bits we haven't seen in tmouts   */
@@ -559,6 +558,7 @@ typedef struct afl_state {
   u8 *var_bytes;                        /* Bytes that appear to be variable */
 
 #define N_FUZZ_SIZE (1 << 21)
+#define RESET_PARAM 1                   /* The number of seeds to add before resetting the hit counts */
   u32 *n_fuzz, *n_fuzz_reset;       /* Number of fuzz cases per queue entry */
 
   volatile u8 stop_soon,                /* Ctrl-C pressed?                  */
