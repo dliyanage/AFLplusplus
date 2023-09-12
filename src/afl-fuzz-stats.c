@@ -313,6 +313,8 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
       "cycles_wo_finds   : %llu\n"
       "time_wo_finds     : %llu\n"
       "execs_done        : %llu\n"
+      "singletons        : %llu\n"
+      "singletons_reset  : %llu\n"
       "good_turing       : %Le\n"
       "good_turing_reset : %Le\n"
       "execs_per_sec     : %0.02f\n"
@@ -359,7 +361,7 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
           : ((afl->start_time == 0 || afl->last_find_time == 0)
                  ? 0
                  : (cur_time - afl->last_find_time) / 1000),
-      afl->fsrv.total_execs, afl->gt, afl->gt_reset,
+      afl->fsrv.total_execs, afl->singletons, afl->singletons_reset, afl->gt, afl->gt_reset,
       afl->fsrv.total_execs /
           ((double)(afl->prev_run_time + get_cur_time() - afl->start_time) /
            1000),
@@ -507,12 +509,12 @@ void maybe_update_plot_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
 
   fprintf(afl->fsrv.plot_file,
           "%llu, %llu, %u, %u, %u, %u, %0.02f%%, %llu, %llu, %u, %0.02f, %llu, "
-          "%u, %Le, %Le\n",
+          "%u, %llu, %llu, %Le, %Le\n",
           ((afl->prev_run_time + get_cur_time() - afl->start_time) / 1000),
           afl->queue_cycle - 1, afl->current_entry, afl->queued_items,
           afl->pending_not_fuzzed, afl->pending_favored, bitmap_cvg,
           afl->saved_crashes, afl->saved_hangs, afl->max_depth, eps,
-          afl->plot_prev_ed, t_bytes,afl->gt,afl->gt_reset);                     /* ignore errors */
+          afl->plot_prev_ed, t_bytes, afl->singletons, afl->singletons_reset, afl->gt,afl->gt_reset);                     /* ignore errors */
 
   fflush(afl->fsrv.plot_file);
 
