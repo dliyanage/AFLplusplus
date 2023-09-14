@@ -290,13 +290,14 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
         afl->gt = ((double) afl->singletons) / afl->fsrv.total_execs;
         afl->gt_reset_1 = ((double) afl->singletons_reset_1) / afl->fsrv.total_execs;
         afl->gt_reset_10 = ((double) afl->singletons_reset_10) / afl->fsrv.total_execs;
-        afl->laplace = ((double) (1 / (afl->fsrv.total_execs + 2)));  
+        afl->laplace = (1 / ((double) afl->fsrv.total_execs + 2));  
 
     } else{
 
         afl->gt = 0;
         afl->gt_reset_1 = 0;
         afl->gt_reset_10 = 0;
+        afl->laplace = 0;
 
     }
 
