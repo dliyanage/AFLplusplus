@@ -542,12 +542,12 @@ typedef struct afl_state {
       reinit_table;                     /* reinit the queue weight table    */
 
   u64 singletons,                        /* Number of singletons */
-      singletons_reset_1;                /* Number of 1-reset singletons */
+      singletons_reset_1,                /* Number of 1-reset singletons */
       singletons_reset_10;               /* Number of 10-reset singletons */
   
   long double gt,                     /* Good-Turing estimator */
-              gt_reset_1;             /* Good-Turing estimator after 1-reset */
-              gt_reset_10;            /* Good-Turing estimator after 10-reset */
+              gt_reset_1,             /* Good-Turing estimator after 1-reset */
+              gt_reset_10,            /* Good-Turing estimator after 10-reset */
               laplace;                /* Laplace estimator */
 
   u8 *virgin_bits,                      /* Regions yet untouched by fuzzing */
