@@ -804,7 +804,7 @@ struct discovered_edge {
   u32 edge_id;
   struct discovered_edge *next;
 };
-struct discovered_edge *edges1 = NULL;
+struct discovered_edge *discovered_edges = NULL;
 
 struct custom_mutator {
 

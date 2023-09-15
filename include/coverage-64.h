@@ -103,8 +103,8 @@ inline void discover_word(u8 *ret, u64 *current, u64 *virgin, u32 i) {
           if (cur[a] && vir[a] == 0xff) {
             struct discovered_edge *new_edge = (struct discovered_edge*)malloc(sizeof(struct discovered_edge));
             new_edge->edge_id = j + a;
-            new_edge->next = edges1;
-            edges1 = new_edge;
+            new_edge->next = discovered_edges;
+            discovered_edges = new_edge;
           }
         }
 
