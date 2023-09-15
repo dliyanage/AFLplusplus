@@ -1124,9 +1124,9 @@ u32  count_bytes(afl_state_t *, u8 *);
 u32  count_non_255_bytes(afl_state_t *, u8 *);
 void simplify_trace(afl_state_t *, u8 *);
 #ifdef WORD_SIZE_64
-void discover_word(u8 *ret, u64 *current, u64 *virgin);
+void discover_word(u8 *ret, u64 *current, u64 *virgin, u32 i);
 #else
-void discover_word(u8 *ret, u32 *current, u32 *virgin);
+void discover_word(u8 *ret, u32 *current, u32 *virgin, u32 i);
 #endif
 void init_count_class16(void);
 void minimize_bits(afl_state_t *, u8 *, u8 *);

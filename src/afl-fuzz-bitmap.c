@@ -475,7 +475,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
   u32 label = 0x5eed; //old edge
   struct discovered_edge *e = edges;
   while (e && e->edge_id != label) {
-    if (trace_bits[e->edge_id]) {
+    if (afl->fsrv.trace_bits[e->edge_id]) {
       label = e->edge_id;
       break;
     }
