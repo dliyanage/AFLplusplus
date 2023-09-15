@@ -473,13 +473,15 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
   /* Update edge frequency */
   /* Find label for input */
   u32 label = 0x5eed; //old edge
-  struct discovered_edge *e = afl->discovered_edges;
-  while (e && e->edge_id != label) {
-    if (afl->fsrv.trace_bits[e->edge_id]) {
-      label = e->edge_id;
-      break;
+  if (afl->fsrv) {
+    struct discovered_edge *e = afl->discovered_edges;
+    while (e && e->edge_id != label) {
+      if (afl->fsrv.trace_bits[e->edge_id]) {
+        label = e->edge_id;
+        break;
+      }
+      e = e->next;
     }
-    e = e->next;
   }
 
 
