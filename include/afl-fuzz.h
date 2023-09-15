@@ -544,7 +544,7 @@ typedef struct afl_state {
   u64 singletons,                        /* Number of singletons */
       singletons_reset_1,                /* Number of 1-reset singletons */
       singletons_reset_10;               /* Number of 10-reset singletons */
-  
+
   long double gt,                     /* Good-Turing estimator */
               gt_reset_1,             /* Good-Turing estimator after 1-reset */
               gt_reset_10,            /* Good-Turing estimator after 10-reset */
@@ -799,6 +799,12 @@ typedef struct afl_state {
 #endif
 
 } afl_state_t;
+
+struct discovered_edge {
+  u32 edge_id;
+  struct discovered_edge *next;
+};
+struct discovered_edge *edges = NULL;
 
 struct custom_mutator {
 
