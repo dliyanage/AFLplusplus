@@ -484,18 +484,24 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
     // Update the nunber of singletons and reset-singletons
     if (afl->n_fuzz[cksum % N_FUZZ_SIZE] == 0 ) afl->singletons++;
-    if (afl->n_fuzz_reset[cksum % N_FUZZ_SIZE] == 0 ) afl->singletons_reset++;
+    if (afl->n_fuzz_reset_1[cksum % N_FUZZ_SIZE] == 0 ) afl->singletons_reset_1++;
+    if (afl->n_fuzz_reset_10[cksum % N_FUZZ_SIZE] == 0 ) afl->singletons_reset_10++;
     
     if (afl->n_fuzz[cksum % N_FUZZ_SIZE] == 1) afl->singletons--;
-    if (afl->n_fuzz_reset[cksum % N_FUZZ_SIZE] == 1) afl->singletons_reset--;
+    if (afl->n_fuzz_reset_1[cksum % N_FUZZ_SIZE] == 1) afl->singletons_reset_1--;
+    if (afl->n_fuzz_reset_10[cksum % N_FUZZ_SIZE] == 1) afl->singletons_reset_10--;
 
     /* Saturated increment */
     if (likely(afl->n_fuzz[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
       afl->n_fuzz[cksum % N_FUZZ_SIZE]++;
     }
 
-    if (likely(afl->n_fuzz_reset[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
-      afl->n_fuzz_reset[cksum % N_FUZZ_SIZE]++;
+    if (likely(afl->n_fuzz_reset_1[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
+      afl->n_fuzz_reset_1[cksum % N_FUZZ_SIZE]++;
+    }
+
+    if (likely(afl->n_fuzz_reset_10[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
+      afl->n_fuzz_reset_10[cksum % N_FUZZ_SIZE]++;
     }
 
   }
@@ -546,10 +552,17 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     close(fd);
     add_to_queue(afl, queue_fn, len, 0);
 
-    if ((afl->queued_items % RESET_PARAM) == 0) {
+    if ((afl->queued_items % RESET_PARAM_1) == 0) {
 
-      memset(afl->n_fuzz_reset, 0, N_FUZZ_SIZE * sizeof(u32));
-      afl->singletons_reset = 0;
+      memset(afl->n_fuzz_reset_1, 0, N_FUZZ_SIZE * sizeof(u32));
+      afl->singletons_reset_1 = 0;
+
+    }
+
+    if ((afl->queued_items % RESET_PARAM_10) == 0) {
+
+      memset(afl->n_fuzz_reset_10, 0, N_FUZZ_SIZE * sizeof(u32));
+      afl->singletons_reset_10 = 0;
 
     }
 
@@ -616,7 +629,8 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
       afl->queue_top->n_fuzz_entry = cksum % N_FUZZ_SIZE;
       afl->n_fuzz[afl->queue_top->n_fuzz_entry] = 1;
-      afl->n_fuzz_reset[afl->queue_top->n_fuzz_entry] = 1;
+      afl->n_fuzz_reset_1[afl->queue_top->n_fuzz_entry] = 1;
+      afl->n_fuzz_reset_10[afl->queue_top->n_fuzz_entry] = 1;
 
     }
 

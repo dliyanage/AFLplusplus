@@ -288,12 +288,16 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
     if (afl->fsrv.total_execs > 0) {
 
         afl->gt = ((double) afl->singletons) / afl->fsrv.total_execs;
-        afl->gt_reset = ((double) afl->singletons_reset) / afl->fsrv.total_execs;  
+        afl->gt_reset_1 = ((double) afl->singletons_reset_1) / afl->fsrv.total_execs;
+        afl->gt_reset_10 = ((double) afl->singletons_reset_10) / afl->fsrv.total_execs;
+        afl->laplace = (1 / ((double) afl->fsrv.total_execs + 2));  
 
     } else{
 
         afl->gt = 0;
-        afl->gt_reset = 0;
+        afl->gt_reset_1 = 0;
+        afl->gt_reset_10 = 0;
+        afl->laplace = 0;
 
     }
 
@@ -314,9 +318,12 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
       "time_wo_finds     : %llu\n"
       "execs_done        : %llu\n"
       "singletons        : %llu\n"
-      "singletons_reset  : %llu\n"
+      "singletons_reset_1  : %llu\n"
+      "singletons_reset_10 : %llu\n"
+      "laplace           : %Le\n"
       "good_turing       : %Le\n"
-      "good_turing_reset : %Le\n"
+      "good_turing_reset_1 : %Le\n"
+      "good_turing_reset_10 : %Le\n"
       "execs_per_sec     : %0.02f\n"
       "execs_ps_last_min : %0.02f\n"
       "corpus_count      : %u\n"
@@ -361,7 +368,7 @@ void write_stats_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
           : ((afl->start_time == 0 || afl->last_find_time == 0)
                  ? 0
                  : (cur_time - afl->last_find_time) / 1000),
-      afl->fsrv.total_execs, afl->singletons, afl->singletons_reset, afl->gt, afl->gt_reset,
+      afl->fsrv.total_execs, afl->singletons, afl->singletons_reset_1, afl->singletons_reset_10, afl->laplace, afl->gt, afl->gt_reset_1, afl->gt_reset_10,
       afl->fsrv.total_execs /
           ((double)(afl->prev_run_time + get_cur_time() - afl->start_time) /
            1000),
@@ -509,12 +516,12 @@ void maybe_update_plot_file(afl_state_t *afl, u32 t_bytes, double bitmap_cvg,
 
   fprintf(afl->fsrv.plot_file,
           "%llu, %llu, %u, %u, %u, %u, %0.02f%%, %llu, %llu, %u, %0.02f, %llu, "
-          "%u, %llu, %llu, %Le, %Le\n",
+          "%u, %llu, %llu, %llu, %Le, %Le, %Le, %Le\n",
           ((afl->prev_run_time + get_cur_time() - afl->start_time) / 1000),
           afl->queue_cycle - 1, afl->current_entry, afl->queued_items,
           afl->pending_not_fuzzed, afl->pending_favored, bitmap_cvg,
           afl->saved_crashes, afl->saved_hangs, afl->max_depth, eps,
-          afl->plot_prev_ed, t_bytes, afl->singletons, afl->singletons_reset, afl->gt,afl->gt_reset);                     /* ignore errors */
+          afl->plot_prev_ed, t_bytes, afl->singletons, afl->singletons_reset_1, afl->singletons_reset_10, afl->laplace, afl->gt,afl->gt_reset_1, afl->gt_reset_10);                     /* ignore errors */
 
   fflush(afl->fsrv.plot_file);
 

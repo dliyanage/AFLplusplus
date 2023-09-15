@@ -1590,9 +1590,11 @@ int main(int argc, char **argv_orig, char **envp) {
   if (afl->schedule >= FAST && afl->schedule <= RARE) {
 
     afl->n_fuzz = ck_alloc(N_FUZZ_SIZE * sizeof(u32));
-    afl->n_fuzz_reset = ck_alloc(N_FUZZ_SIZE * sizeof(u32));
+    afl->n_fuzz_reset_1 = ck_alloc(N_FUZZ_SIZE * sizeof(u32));
+    afl->n_fuzz_reset_10 = ck_alloc(N_FUZZ_SIZE * sizeof(u32));
     afl->singletons = 0;
-    afl->singletons_reset = 0;
+    afl->singletons_reset_1 = 0;
+    afl->singletons_reset_10 = 0;
 
   }
 
