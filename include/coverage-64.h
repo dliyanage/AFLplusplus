@@ -74,7 +74,7 @@ inline void classify_counts(afl_forkserver_t *fsrv) {
 
 /* Updates the virgin bits, then reflects whether a new count or a new tuple is
  * seen in ret. */
-inline void discover_word(u8 *ret, u64 *current, u64 *virgin, u32 i) {
+inline void discover_word(afl_state_t *afl, u8 *ret, u64 *current, u64 *virgin, u32 i) {
 
   /* Optimize for (*current & *virgin) == 0 - i.e., no bits in current bitmap
      that have not been already cleared from the virgin map - since this will
@@ -103,8 +103,8 @@ inline void discover_word(u8 *ret, u64 *current, u64 *virgin, u32 i) {
           if (cur[a] && vir[a] == 0xff) {
             struct discovered_edge *new_edge = (struct discovered_edge*)malloc(sizeof(struct discovered_edge));
             new_edge->edge_id = j + a;
-            new_edge->next = discovered_edges;
-            discovered_edges = new_edge;
+            new_edge->next = afl->discovered_edges;
+            afl->discovered_edges = new_edge;
           }
         }
 
