@@ -797,7 +797,7 @@ typedef struct afl_state {
    * is too large) */
   struct queue_entry **q_testcase_cache;
 
-  struct discovered_edge *discovered_edges = NULL;
+  struct discovered_edge *discovered_edges;
 
 #ifdef INTROSPECTION
   char  mutation[8072];
