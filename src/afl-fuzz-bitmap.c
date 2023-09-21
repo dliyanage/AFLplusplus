@@ -520,10 +520,10 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     //  afl->n_fuzz_reset_10[label % N_FUZZ_SIZE]++;
     //}
 
-    u64 singletons = 0;
+    afl->singletons = 0;
     for (u32 i = 0; i < N_FUZZ_SIZE; ++i) {
 
-      if (afl->n_fuzz[i] == 1) { ++singletons; }
+      if (afl->n_fuzz[i] == 1) { afl->singletons++; }
 
     }
 
