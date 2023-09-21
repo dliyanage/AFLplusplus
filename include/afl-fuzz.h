@@ -428,13 +428,6 @@ struct foreign_sync {
 
 };
 
-struct discovered_edge {
-  u32 edge_id;
-  struct discovered_edge *next;
-};
-
-struct discovered_edge *edges = NULL;
-
 typedef struct afl_state {
 
   /* Position of this state in the global states list */
@@ -556,6 +549,11 @@ typedef struct afl_state {
               gt_reset_1,             /* Good-Turing estimator after 1-reset */
               gt_reset_10,            /* Good-Turing estimator after 10-reset */
               laplace;                /* Laplace estimator */
+
+  struct discovered_edge {
+    u32 edge_id;
+    struct discovered_edge *next;
+  };
 
   u8 *virgin_bits,                      /* Regions yet untouched by fuzzing */
       *virgin_tmout,                    /* Bits we haven't seen in tmouts   */
