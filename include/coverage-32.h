@@ -85,7 +85,7 @@ inline void discover_word(afl_state_t *afl, u8 *ret, u32 *current, u32 *virgin, 
         *ret = 2;
 
         u32 j = (((afl->fsrv.real_map_size + 7) >> 2) - i - 1) << 2;
-        if (j == 0) j = 0x5eed;
+        if (j == 0) j = 0x0;
         for (u8 a = 0; a < 4; a++) {
           // Cold code
           if (cur[a] && vir[a] == 0xff) {
