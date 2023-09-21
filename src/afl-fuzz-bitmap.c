@@ -499,28 +499,30 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     cksum = hash64(afl->fsrv.trace_bits, afl->fsrv.map_size, HASH_CONST);
 
     // Update the nunber of singletons and reset-singletons
-    //if (afl->n_fuzz[label % N_FUZZ_SIZE] == 0 ) afl->singletons++;
-    //if (afl->n_fuzz_reset_1[label % N_FUZZ_SIZE] == 0 ) afl->singletons_reset_1//++;
-    //if (afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] == 0 ) //afl->singletons_reset_10++;
-//
-    //if (afl->n_fuzz[label % N_FUZZ_SIZE] == 1) afl->singletons--;
-    //if (afl->n_fuzz_reset_1[label % N_FUZZ_SIZE] == 1) //afl->singletons_reset_1--;
-    //if (afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] == 1) //afl->singletons_reset_10--;
-//
-    ///* Saturated increment */
-    //if (likely(afl->n_fuzz[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
-    //  afl->n_fuzz[label % N_FUZZ_SIZE]++;
-    //}
-//
-    //if (likely(afl->n_fuzz_reset_1[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
-    //  afl->n_fuzz_reset_1[label % N_FUZZ_SIZE]++;
-    //}
-//
-    //if (likely(afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
-    //  afl->n_fuzz_reset_10[label % N_FUZZ_SIZE]++;
-    //}
+    /*
+    if (afl->n_fuzz[label % N_FUZZ_SIZE] == 0 ) afl->singletons++;
+    if (afl->n_fuzz_reset_1[label % N_FUZZ_SIZE] == 0 ) afl->singletons_reset_1++;
+    if (afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] == 0 ) afl->singletons_reset_10++;
 
-  //}
+    if (afl->n_fuzz[label % N_FUZZ_SIZE] == 1) afl->singletons--;
+    if (afl->n_fuzz_reset_1[label % N_FUZZ_SIZE] == 1) afl->singletons_reset_1--;
+    if (afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] == 1) afl->singletons_reset_10--;
+*/
+    /* Saturated increment */
+    /*
+    if (likely(afl->n_fuzz[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
+      afl->n_fuzz[label % N_FUZZ_SIZE]++;
+    }
+
+    if (likely(afl->n_fuzz_reset_1[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
+      afl->n_fuzz_reset_1[label % N_FUZZ_SIZE]++;
+    }
+
+    if (likely(afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
+      afl->n_fuzz_reset_10[label % N_FUZZ_SIZE]++;
+    }
+
+  }*/
 
   if (likely(fault == afl->crash_mode)) {
 
