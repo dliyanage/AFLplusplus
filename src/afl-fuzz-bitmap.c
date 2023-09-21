@@ -651,9 +651,9 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     if (likely(label)) {
 
       afl->queue_top->n_fuzz_entry = label % N_FUZZ_SIZE;
-      afl->n_fuzz[afl->queue_top->n_fuzz_entry] = 1;
-      afl->n_fuzz_reset_1[afl->queue_top->n_fuzz_entry] = 1;
-      afl->n_fuzz_reset_10[afl->queue_top->n_fuzz_entry] = 1;
+      afl->n_fuzz[afl->queue_top->n_fuzz_entry]++;
+      afl->n_fuzz_reset_1[afl->queue_top->n_fuzz_entry]++;
+      afl->n_fuzz_reset_10[afl->queue_top->n_fuzz_entry]++;
 
     }
 
