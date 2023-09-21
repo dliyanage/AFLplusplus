@@ -223,7 +223,7 @@ inline u8 has_new_bits(afl_state_t *afl, u8 *virgin_map) {
   u8 ret = 0;
   while (i--) {
 
-    if (unlikely(*current)) discover_word(&ret, current, virgin);
+    if (unlikely(*current)) discover_word(afl, &ret, current, virgin, i);
 
     current++;
     virgin++;
@@ -470,38 +470,54 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
   s32 fd;
   u64 cksum = 0;
 
+
+
   /* Update path frequency. */
 
   /* Generating a hash on every input is super expensive. Bad idea and should
      only be used for special schedules */
+  u32 label = 0x5eed; //old edge
   if (likely(afl->schedule >= FAST && afl->schedule <= RARE)) {
 
     classify_counts(&afl->fsrv);
     classified = 1;
     need_hash = 0;
 
+    /* Update edge frequency */
+    /* Find label for input */
+
+    struct discovered_edge *e = afl->discovered_edges;
+    while (e && e->edge_id != label) {
+      if (((u64 *)afl->fsrv.trace_bits)[e->edge_id]) {
+        label = e->edge_id;
+        break;
+      }
+      e = e->next;
+    }
+
+
     cksum = hash64(afl->fsrv.trace_bits, afl->fsrv.map_size, HASH_CONST);
 
     // Update the nunber of singletons and reset-singletons
-    if (afl->n_fuzz[cksum % N_FUZZ_SIZE] == 0 ) afl->singletons++;
-    if (afl->n_fuzz_reset_1[cksum % N_FUZZ_SIZE] == 0 ) afl->singletons_reset_1++;
-    if (afl->n_fuzz_reset_10[cksum % N_FUZZ_SIZE] == 0 ) afl->singletons_reset_10++;
-    
-    if (afl->n_fuzz[cksum % N_FUZZ_SIZE] == 1) afl->singletons--;
-    if (afl->n_fuzz_reset_1[cksum % N_FUZZ_SIZE] == 1) afl->singletons_reset_1--;
-    if (afl->n_fuzz_reset_10[cksum % N_FUZZ_SIZE] == 1) afl->singletons_reset_10--;
+    if (afl->n_fuzz[label % N_FUZZ_SIZE] == 0 ) afl->singletons++;
+    if (afl->n_fuzz_reset_1[label % N_FUZZ_SIZE] == 0 ) afl->singletons_reset_1++;
+    if (afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] == 0 ) afl->singletons_reset_10++;
+
+    if (afl->n_fuzz[label % N_FUZZ_SIZE] == 1) afl->singletons--;
+    if (afl->n_fuzz_reset_1[label % N_FUZZ_SIZE] == 1) afl->singletons_reset_1--;
+    if (afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] == 1) afl->singletons_reset_10--;
 
     /* Saturated increment */
-    if (likely(afl->n_fuzz[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
-      afl->n_fuzz[cksum % N_FUZZ_SIZE]++;
+    if (likely(afl->n_fuzz[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
+      afl->n_fuzz[label % N_FUZZ_SIZE]++;
     }
 
-    if (likely(afl->n_fuzz_reset_1[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
-      afl->n_fuzz_reset_1[cksum % N_FUZZ_SIZE]++;
+    if (likely(afl->n_fuzz_reset_1[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
+      afl->n_fuzz_reset_1[label % N_FUZZ_SIZE]++;
     }
 
-    if (likely(afl->n_fuzz_reset_10[cksum % N_FUZZ_SIZE] < 0xFFFFFFFF)){
-      afl->n_fuzz_reset_10[cksum % N_FUZZ_SIZE]++;
+    if (likely(afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
+      afl->n_fuzz_reset_10[label % N_FUZZ_SIZE]++;
     }
 
   }
@@ -544,7 +560,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     queue_fn =
         alloc_printf("%s/queue/id_%06u", afl->out_dir, afl->queued_items);
 
-#endif                                                    
+#endif
     /* ^!SIMPLE_FILES */
     fd = open(queue_fn, O_WRONLY | O_CREAT | O_EXCL, DEFAULT_PERMISSION);
     if (unlikely(fd < 0)) { PFATAL("Unable to create '%s'", queue_fn); }
@@ -625,9 +641,9 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     }
 
     /* For AFLFast schedules we update the new queue entry */
-    if (likely(cksum)) {
+    if (likely(label)) {
 
-      afl->queue_top->n_fuzz_entry = cksum % N_FUZZ_SIZE;
+      afl->queue_top->n_fuzz_entry = label % N_FUZZ_SIZE;
       afl->n_fuzz[afl->queue_top->n_fuzz_entry] = 1;
       afl->n_fuzz_reset_1[afl->queue_top->n_fuzz_entry] = 1;
       afl->n_fuzz_reset_10[afl->queue_top->n_fuzz_entry] = 1;
