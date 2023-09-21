@@ -571,14 +571,14 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     if ((afl->queued_items % RESET_PARAM_1) == 0) {
 
       memset(afl->n_fuzz_reset_1, 0, N_FUZZ_SIZE * sizeof(u32));
-      afl->singletons_reset_1 = 0;
+      afl->singletons_reset_1 = 0x0;
 
     }
 
     if ((afl->queued_items % RESET_PARAM_10) == 0) {
 
       memset(afl->n_fuzz_reset_10, 0, N_FUZZ_SIZE * sizeof(u32));
-      afl->singletons_reset_10 = 0;
+      afl->singletons_reset_10 = 0x0;
 
     }
 
