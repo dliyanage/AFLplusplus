@@ -512,6 +512,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     u32 lab;
     while(edge) {
       lab = edge->edge_id;
+      if (afl->n_fuzz[lab % N_FUZZ_SIZE] == 1) { afl->singletons++; }
       if (afl->n_fuzz_reset_1[lab % N_FUZZ_SIZE] == 1) { afl->singletons_reset_1++; }
       edge = edge->next;
     }
