@@ -657,6 +657,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     }
 
     /* For AFLFast schedules we update the new queue entry */
+    /*
     if (likely(label)) {
 
       struct discovered_edge *edge = afl->discovered_edges;
@@ -676,8 +677,10 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
         if (afl->n_fuzz_reset_10[lab % N_FUZZ_SIZE] == 1) {   afl->singletons_reset_10++; }
         edge = edge->next;
       }
+      
 
     }
+    */
 
     /* Try to calibrate inline; this also calls update_bitmap_score() when
        successful. */
