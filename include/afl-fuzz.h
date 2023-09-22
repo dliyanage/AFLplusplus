@@ -428,6 +428,11 @@ struct foreign_sync {
 
 };
 
+struct discovered_edge {
+  u32 edge_id;
+  struct discovered_edge *next;
+};
+
 typedef struct afl_state {
 
   /* Position of this state in the global states list */
@@ -544,7 +549,7 @@ typedef struct afl_state {
   u64 singletons,                        /* Number of singletons */
       singletons_reset_1,                /* Number of 1-reset singletons */
       singletons_reset_10;               /* Number of 10-reset singletons */
-  
+
   long double gt,                     /* Good-Turing estimator */
               gt_reset_1,             /* Good-Turing estimator after 1-reset */
               gt_reset_10,            /* Good-Turing estimator after 10-reset */
@@ -790,6 +795,8 @@ typedef struct afl_state {
   /* Refs to each queue entry with cached testcase (for eviction, if cache_count
    * is too large) */
   struct queue_entry **q_testcase_cache;
+
+  struct discovered_edge *discovered_edges;
 
 #ifdef INTROSPECTION
   char  mutation[8072];
@@ -1118,9 +1125,9 @@ u32  count_bytes(afl_state_t *, u8 *);
 u32  count_non_255_bytes(afl_state_t *, u8 *);
 void simplify_trace(afl_state_t *, u8 *);
 #ifdef WORD_SIZE_64
-void discover_word(u8 *ret, u64 *current, u64 *virgin);
+void discover_word(afl_state_t *afl, u8 *ret, u64 *current, u64 *virgin, u32 i);
 #else
-void discover_word(u8 *ret, u32 *current, u32 *virgin);
+void discover_word(afl_state_t *afl, u8 *ret, u32 *current, u32 *virgin, u32 i);
 #endif
 void init_count_class16(void);
 void minimize_bits(afl_state_t *, u8 *, u8 *);
