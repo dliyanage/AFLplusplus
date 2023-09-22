@@ -508,12 +508,12 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     if (afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] == 1) afl->singletons_reset_10--;
     */
 
-    struct discovered_edge *e = afl->discovered_edges;
+    struct discovered_edge *edge = afl->discovered_edges;
     u32 lab;
-    while(e) {
-      lab = e->edge_id;
-      if (afl->n_fuzz[lab % N_FUZZ_SIZE] == 1) { ++afl->singletons; }
-      e = e->next;
+    while(edge) {
+      lab = edge->edge_id;
+      if (afl->n_fuzz[lab % N_FUZZ_SIZE] == 1) { afl->singletons++; }
+      edge = edge->next;
     }
     
     /* Saturated increment */
