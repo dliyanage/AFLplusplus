@@ -510,15 +510,19 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
     struct discovered_edge *edge = afl->discovered_edges;
     u32 lab;
+    afl->singletons = 0;
+    afl->singletons_reset_1 = 0;
+    afl->singletons_reset_10 = 0;
     while(edge) {
       lab = edge->edge_id;
       if (afl->n_fuzz[lab % N_FUZZ_SIZE] == 1) { afl->singletons++; }
       if (afl->n_fuzz_reset_1[lab % N_FUZZ_SIZE] == 1) { afl->singletons_reset_1++; }
+      if (afl->n_fuzz_reset_10[lab % N_FUZZ_SIZE] == 1) { afl->singletons_reset_10++; }
       edge = edge->next;
     }
     
     /* Saturated increment */
-    /*
+    
     if (likely(afl->n_fuzz[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
       afl->n_fuzz[label % N_FUZZ_SIZE]++;
     }
@@ -530,7 +534,7 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     if (likely(afl->n_fuzz_reset_10[label % N_FUZZ_SIZE] < 0xFFFFFFFF)){
       afl->n_fuzz_reset_10[label % N_FUZZ_SIZE]++;
     }
-    */
+    
 
   }
 
@@ -655,10 +659,23 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
     /* For AFLFast schedules we update the new queue entry */
     if (likely(label)) {
 
+      struct discovered_edge *edge = afl->discovered_edges;
+      u32 lab;
+      afl->singletons = 0;
+      afl->singletons_reset_1 = 0;
+      afl->singletons_reset_10 = 0;
       afl->queue_top->n_fuzz_entry = label % N_FUZZ_SIZE;
-      afl->n_fuzz[afl->queue_top->n_fuzz_entry]++;
-      afl->n_fuzz_reset_1[afl->queue_top->n_fuzz_entry]++;
-      afl->n_fuzz_reset_10[afl->queue_top->n_fuzz_entry]++;
+      afl->n_fuzz[afl->queue_top->n_fuzz_entry] = 1;
+      afl->n_fuzz_reset_1[afl->queue_top->n_fuzz_entry] = 1;
+      afl->n_fuzz_reset_10[afl->queue_top->n_fuzz_entry] = 1;
+
+      while(edge) {
+        lab = edge->edge_id;
+        if (afl->n_fuzz[lab % N_FUZZ_SIZE] == 1) { afl->singletons++; }
+        if (afl->n_fuzz_reset_1[lab % N_FUZZ_SIZE] == 1) { afl->singletons_reset_1  ++; }
+        if (afl->n_fuzz_reset_10[lab % N_FUZZ_SIZE] == 1) {   afl->singletons_reset_10++; }
+        edge = edge->next;
+      }
 
     }
 
